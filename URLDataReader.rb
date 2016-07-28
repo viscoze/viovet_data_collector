@@ -13,16 +13,28 @@ class URLDataReader
   private
 
   def process_category(links)
-    links.map do |link|
-      page     = Nokogiri::HTML(open(link))
-      name     = find_name(page)
-      products = find_products(page, name)
+    threads  = []
+    category = []
 
-      { product_family_name: name, products: products }
+    links.map do |link|
+      threads << Thread.new do
+        category << get_multiproduct(link)
+      end
     end
+
+    threads.map(&:join)
+    category
   end
 
-  def find_products(page, name)
+  def get_multiproduct(link)
+    page     = Nokogiri::HTML(open(link))
+    name     = find_name(page)
+    products = process_products(page, name)
+
+    { product_family_name: name, products: products }
+  end
+
+  def process_products(page, name)
     products_html = page.css('li.product')
     products_html.map do |product_html|
       title    = find_product_title(product_html)

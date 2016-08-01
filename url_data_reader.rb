@@ -1,4 +1,5 @@
 require 'nokogiri'
+require './product_data_reader.rb'
 
 class URLDataReader
 
@@ -32,52 +33,22 @@ class URLDataReader
     products = process_products(page, name)
 
     { product_family_name: name, products: products }
-  rescue
+  rescue => e
+    puts e
     { product_family_name: "http error", products: [] }
   end
 
   def process_products(page, name)
-    products_html = page.css('li.product')
-    products_html.map do |product_html|
-      title    = find_product_title(product_html)
-      price    = find_product_price(product_html)
-      image    = find_product_image(product_html)
-      dispatch = find_product_dispatch(product_html)
-      code     = find_product_code(product_html)
+    product_data_reader = ProductDataReader.new
+    product_data_reader.set_product_family_name(name)
 
-      title = "#{name} - #{title}"
-
-      { title: title, price: price, image: image, dispatch: dispatch, code: code }
+    page.css('li.product').map do |product_html|
+      product_data_reader.set_product_html(product_html)
+      product_data_reader.get_product_data
     end
   end
 
   def find_name(page)
     page.css('#product_family_heading').text
-  end
-
-  def find_product_title(product_html)
-    product_html.css('div.title').text.gsub("\t", "").gsub("\n", "")
-  end
-
-  def find_product_price(product_html)
-    product_html.css('span[itemprop="price"]').text
-  end
-
-  def find_product_image(product_html)
-    image_url = product_html.css('ul.buttonthings li')
-                            .css('a.photo-view')
-                            .first['href']
-
-    "http:#{image_url}"
-  rescue
-    nil
-  end
-
-  def find_product_dispatch(product_html)
-    product_html.css('strong.stock.in-stock').text.gsub("\t", "").gsub("\n", "")
-  end
-
-  def find_product_code(product_html)
-    product_html.css('strong[itemprop="sku"]').text
   end
 end

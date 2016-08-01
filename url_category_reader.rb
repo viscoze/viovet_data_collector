@@ -2,7 +2,7 @@ require 'nokogiri'
 require 'open-uri'
 
 class URLCategoryReader
-  
+
   def self.links(url)
     new.links(url)
   end
@@ -21,11 +21,15 @@ class URLCategoryReader
     Nokogiri::HTML(open(url))
   end
 
-  def get_anchors(page)
-    page.css('ul.families-list').css('li>a')
+  def get_all_paginate_parts(page)
+    page
   end
 
-  def get_hrefs(anchors) # return [] of links
+  def get_anchors(part)
+    part.css('ul.families-list').css('li>a')
+  end
+
+  def get_hrefs(anchors)
     anchors.map do |anchor|
       anchor['href']
     end

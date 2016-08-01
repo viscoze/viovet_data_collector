@@ -6,7 +6,7 @@ require './csv_creater.rb'
 
 class Main
   def start
-    user_input = get_info_from_user
+    user_input = get_info_from_command_line
     run(*user_input)
   end
 

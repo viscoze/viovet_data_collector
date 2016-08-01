@@ -32,6 +32,8 @@ class URLDataReader
     products = process_products(page, name)
 
     { product_family_name: name, products: products }
+  rescue
+    { product_family_name: "http error", products: [] }
   end
 
   def process_products(page, name)

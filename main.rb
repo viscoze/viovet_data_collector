@@ -1,8 +1,8 @@
 require 'uri'
 
-require './URLCategoryReader.rb'
-require './URLDataReader.rb'
-require './CSVCreater.rb'
+require './url_category_reader.rb'
+require './url_data_reader.rb'
+require './csv_creater.rb'
 
 class Main
   def start
@@ -17,11 +17,9 @@ class Main
     CSVCreater.create_csv_file(filename, category)
   end
 
-  def get_info_from_user
-    puts "Enter URL: "
-    url = gets.chomp
-    puts "Enter filename: "
-    filename = gets.chomp
+  def get_info_from_command_line
+    url = ARGV[0]
+    filename = ARGV[1]
 
     [url, filename]
   end

@@ -2,9 +2,10 @@ require 'nokogiri'
 require 'open-uri'
 
 class URLCategoryReader
+  
   def self.links(url)
     new.links(url)
-  end  
+  end
 
   def links(url)
     page    = read(url)

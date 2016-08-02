@@ -9,7 +9,9 @@ class URLCategoryReader
 
   def links(url)
     page    = read(url)
-    anchors = get_anchors(page)
+
+    parts   = get_all_paginate_parts(page, url)
+    anchors = get_all_anchors(parts)
     hrefs   = get_hrefs(anchors)
     links   = get_links(hrefs, url)
     links
@@ -21,8 +23,23 @@ class URLCategoryReader
     Nokogiri::HTML(open(url))
   end
 
-  def get_all_paginate_parts(page)
-    page
+  def get_all_paginate_parts(page, url)
+    hrefs = find_pagination(page)
+    links_to_parts = get_links(hrefs, url)
+    links_to_parts.pop
+    links_to_parts.map do |links|
+      read(links)
+    end
+  end
+
+  def find_pagination(page)
+    page.css('div.pagination ul li a').map { |anchor| anchor['href'] }
+  end
+
+  def get_all_anchors(parts)
+    parts.map { |part|
+      get_anchors(part)
+    }.flatten
   end
 
   def get_anchors(part)
